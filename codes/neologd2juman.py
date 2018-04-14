@@ -16,26 +16,7 @@ if sys.version_info < (3, 0, 0):
 import csv
 import mojimoji
 import jaconv
-
-def return_subpos(raw):
-    if raw[4] == "記号":
-        return "記号"
-    else:
-        # 一般名詞
-        if raw[5] == "一般":
-            return "普通名詞"
-        elif raw[5] == "サ変接続":
-            return "サ変名詞"
-        # 固有名詞
-        elif raw[6] == "一般":
-            return "固有名詞"
-        elif raw[6] == "人名":
-            return "人名"
-        elif raw[6] == "地域":
-            return "地名"
-        elif raw[6] == "組織":
-            return "組織名"
-    return raw[5]
+from pythonlib_ys import mecabtools as mtools
 
 def my_csv_reader(csv_reader):
     """
@@ -54,6 +35,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage='%(prog)s [options] < INPUT')
     args = parser.parse_args()
 
+    Cache=None
     reader = csv.reader(sys.stdin)
     for i, raw in enumerate(my_csv_reader(reader)):
         # 顔文字、絵文字はエラーの原因になっている可能性があるため、とりあえずはじく
@@ -61,7 +43,13 @@ if __name__ == "__main__":
             continue
 
         pos = raw[4]
-        subpos = return_subpos(raw)
+        subpos = mtools.convert_pos_juman(last_subpos)
+        if '+' in subpos:
+            Cache=raw
+            continue
+        elif '-' in subpos:
+            ()=divide_line(raw,
+            for PlusMinus in ('+', '-'):
         midasi = mojimoji.han_to_zen(raw[0])
         daihyo = mojimoji.han_to_zen(raw[10])
         yomi = jaconv.kata2hira(raw[11])
